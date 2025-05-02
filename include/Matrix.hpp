@@ -1,11 +1,14 @@
 #pragma once
 
 #include <array>
+#include <cassert>
+#include <format>
 #include <initializer_list>
 #include <type_traits>
+#include <ranges>
 
 template<std::size_t R, std::size_t C, typename T>
-requires std::is_arithmetic_v<T>
+requires std::is_arithmetic_v<T> && (R > 0) && (C > 0)
 struct Matrix {
     std::array<std::array<T, C>, R> data;
 
@@ -20,6 +23,103 @@ struct Matrix {
 
     // Default constructor is still needed
     Matrix() = default;
+
+    static Matrix identity() {
+
+        Matrix res;
+
+        for (std::size_t i = 0; i < R; i++) {
+            for (std::size_t j = 0; j < C; j++) {
+                if (i == j) {
+                    res.data[i][j] = T{1};
+                } else {
+                    res.data[i][j] = T{0};
+                }
+            }
+        }
+
+        return res;
+    }
+
+    template<std::size_t SubR, std::size_t SubC>
+    Matrix<SubR, SubC, T> splice(std::ranges::range auto& rows, std::ranges::range auto& cols) const {
+        assert(std::ranges::distance(rows) == SubR && std::format("Row range must dimensionally cover %i rows", SubR).c_str());
+        assert(std::ranges::distance(cols) == SubC && std::format("Row range must dimensionally cover %i columns", SubC).c_str());
+
+        Matrix<SubR, SubC, T> res;
+
+        std::size_t row = 0;
+        for (auto&& r : rows) {
+            if (r >= R) {
+                throw std::out_of_range("Row index out of bounds");
+            }
+
+
+            std::size_t col = 0;
+            for (auto&& c : cols) {
+                if (c >= C) {
+                    throw std::out_of_range("Column index out of bounds");
+                }
+
+                res.data[row][col] = data[r][c];
+                col++;
+            }
+            row++;
+        }
+
+        return res;
+    }
+
+    Matrix transpose() const {
+        Matrix res;
+
+        for (std::size_t i = 0; i < R; i++) {
+            for (std::size_t j = 0; j < C; j++) {
+                res.data[j][i] = data[i][j];
+            }
+        }
+
+        return res;
+    }
+
+    T determinant() const {
+        assert(R == C && "Determinant is only defined for square matrices");
+
+        // Base case 1
+        if (R == 1) {
+            return data[0][0];
+        }
+
+        // Base case 2
+        if (R == 2) {
+            return data[0][0] * data[1][1] - data[0][1] * data[1][0];
+        }
+
+        T res = T{};
+        int sign = 1;
+
+        // Create a range of indices for rows, skipping the first row
+        auto rows = std::views::iota(size_t{1}, R);
+
+        // Apply Laplace Transformation...
+        for (std::size_t i = 0; i < C; i++) {
+
+            // Create a range of indices for columns, skipping the current column
+            auto cols = std::views::iota(std::size_t{0}, C) |
+                        std::views::filter([i](const std::size_t col) { return col != i; });
+
+            // Calculate determinant of submatrix
+            Matrix<(R - 1 > 1 ? R - 1 : 1), (C - 1 > 1 ? C - 1 : 1), T> subMatrix =
+                splice<(R - 1 > 1 ? R - 1 : 1), (C - 1 > 1 ? C - 1 : 1)>(rows, cols);
+
+            T subDeterminant = subMatrix.determinant();
+
+            res += sign * data[0][i] * subDeterminant;
+            sign = -sign;
+        }
+
+        return res;
+    }
 
     Matrix operator+(const Matrix& other) const {
         Matrix res;
@@ -56,6 +156,18 @@ struct Matrix {
                     sum += data[i][k] * other.data[k][j];
                 }
                 res.data[i][j] = sum;
+            }
+        }
+
+        return res;
+    }
+
+    Matrix operator*(const T& scalar) const {
+        Matrix res;
+
+        for (std::size_t i = 0; i < R; i++) {
+            for (std::size_t j = 0; j < C; j++) {
+                res.data[i][j] = data[i][j] * scalar;
             }
         }
 
