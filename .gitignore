@@ -1,0 +1,10 @@
+cmake-build-debug
+.idea
+
+/CTestTestfile.cmake
+/Makefile
+/CMakeCache.txt
+/cmake_install.cmake
+/CMakeFiles/
+/LinearLib_Tests
+/libLinearLib.a
