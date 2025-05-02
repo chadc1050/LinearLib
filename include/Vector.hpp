@@ -18,6 +18,20 @@ struct Vector {
     // Default constructor is still needed
     Vector() = default;
 
+    std::array<T, N> getData() const {
+        return data;
+    }
+
+    bool operator==(const Vector& other) const {
+        for (std::size_t i = 0; i < N; i++) {
+            if (data[i] != other.data[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     Vector operator+(const Vector& other) const {
         Vector res;
 

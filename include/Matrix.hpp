@@ -82,6 +82,21 @@ struct Matrix {
         return res;
     }
 
+    Matrix reshape(std::size_t const rows, std::size_t const cols) const {
+
+        assert(rows * cols == R * C && "Reshaping matrix must have the same number of elements");
+
+        Matrix res;
+
+        for (std::size_t i = 0; i < rows; i++) {
+            for (std::size_t j = 0; j < cols; j++) {
+                res.data[i][j] = data[i * cols + j];
+            }
+        }
+
+        return res;
+    }
+
     T determinant() const {
         assert(R == C && "Determinant is only defined for square matrices");
 
@@ -119,6 +134,22 @@ struct Matrix {
         }
 
         return res;
+    }
+
+    std::array<std::array<T, C>, R> getData() const {
+        return data;
+    }
+
+    bool operator==(const Matrix& other) const {
+        for (std::size_t i = 0; i < R; i++) {
+            for (std::size_t j = 0; j < C; j++) {
+                if (data[i][j] != other.data[i][j]) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
     }
 
     Matrix operator+(const Matrix& other) const {
