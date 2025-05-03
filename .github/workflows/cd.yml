@@ -4,6 +4,9 @@ on:
   push:
     tags:
       - 'v*'
+  create:
+    branches:
+      - 'v*'
 
 jobs:
   package:
