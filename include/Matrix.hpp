@@ -152,6 +152,16 @@ struct Matrix {
         return true;
     }
 
+    std::array<T, C>& operator[](std::size_t index) {
+        assert(index < R && "Index out of bounds");
+        return data[index];
+    }
+
+    const std::array<T, C>& operator[](std::size_t index) const {
+        assert(index < R && "Index out of bounds");
+        return data[index];
+    }
+
     Matrix operator+(const Matrix& other) const {
         Matrix res;
 

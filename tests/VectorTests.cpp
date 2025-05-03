@@ -9,9 +9,9 @@ TEST_CASE("Vector operations", "[vector]") {
 
         Vector<3, int> result = v1 + v2;
 
-        REQUIRE(result.data[0] == 5);
-        REQUIRE(result.data[1] == 7);
-        REQUIRE(result.data[2] == 9);
+        REQUIRE(result[0] == 5);
+        REQUIRE(result[1] == 7);
+        REQUIRE(result[2] == 9);
     }
 
     SECTION("Vector subtraction") {
@@ -21,9 +21,9 @@ TEST_CASE("Vector operations", "[vector]") {
 
         Vector<3, int> result = v1 - v2;
 
-        REQUIRE(result.data[0] == 3);
-        REQUIRE(result.data[1] == 3);
-        REQUIRE(result.data[2] == 3);
+        REQUIRE(result[0] == 3);
+        REQUIRE(result[1] == 3);
+        REQUIRE(result[2] == 3);
     }
 
     SECTION("Dot product") {
@@ -41,8 +41,8 @@ TEST_CASE("Vector operations", "[vector]") {
 
         Vector<3, int> result = v1 & v2;
 
-        REQUIRE(result.data[0] == -8);
-        REQUIRE(result.data[1] == -8);
-        REQUIRE(result.data[2] == 12);
+        REQUIRE(result[0] == -8);
+        REQUIRE(result[1] == -8);
+        REQUIRE(result[2] == 12);
     }
 }

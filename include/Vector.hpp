@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <cassert>
 #include <initializer_list>
 #include <type_traits>
 
@@ -30,6 +31,16 @@ struct Vector {
         }
 
         return true;
+    }
+
+    T& operator[](std::size_t index) {
+        assert(index < N && "Index out of bounds");
+        return data[index];
+    }
+
+    const T& operator[](std::size_t index) const {
+        assert(index < N && "Index out of bounds");
+        return data[index];
     }
 
     Vector operator+(const Vector& other) const {
@@ -62,11 +73,9 @@ struct Vector {
         return res;
     }
 
-    Vector operator&(const Vector& other) const {
+    Vector<3,T> operator&(const Vector<3,T>& other) const {
 
-        static_assert(N == 3, "Cross product is only defined for 3D vectors");
-
-        Vector res;
+        Vector<3,T> res;
 
         res.data[0] = data[1] * other.data[2] - data[2] * other.data[1];
         res.data[1] = data[2] * other.data[0] - data[0] * other.data[2];

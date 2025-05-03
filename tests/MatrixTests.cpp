@@ -12,10 +12,10 @@ TEST_CASE("Matrix operations", "[vector]") {
 
         const Matrix<2, 2, int> result = m1 + m2;
 
-        REQUIRE(result.data[0][0] == 3);
-        REQUIRE(result.data[0][1] == 3);
-        REQUIRE(result.data[1][0] == 3);
-        REQUIRE(result.data[1][1] == 3);
+        REQUIRE(result[0][0] == 3);
+        REQUIRE(result[0][1] == 3);
+        REQUIRE(result[1][0] == 3);
+        REQUIRE(result[1][1] == 3);
     }
 
     SECTION("Matrix subtraction") {
@@ -27,10 +27,10 @@ TEST_CASE("Matrix operations", "[vector]") {
 
         const Matrix<2, 2, int> result = m1 + m2;
 
-        REQUIRE(result.data[0][0] == 8);
-        REQUIRE(result.data[0][1] == 9);
-        REQUIRE(result.data[1][0] == 9);
-        REQUIRE(result.data[1][1] == 6);
+        REQUIRE(result[0][0] == 8);
+        REQUIRE(result[0][1] == 9);
+        REQUIRE(result[1][0] == 9);
+        REQUIRE(result[1][1] == 6);
     }
 
     SECTION("Matrix multiplication") {
@@ -44,10 +44,10 @@ TEST_CASE("Matrix operations", "[vector]") {
 
         const Matrix<2, 2, int> result = m1 * m2;
 
-        REQUIRE(result.data[0][0] == 67);
-        REQUIRE(result.data[0][1] == 46);
-        REQUIRE(result.data[1][0] == 59);
-        REQUIRE(result.data[1][1] == 31);
+        REQUIRE(result[0][0] == 67);
+        REQUIRE(result[0][1] == 46);
+        REQUIRE(result[1][0] == 59);
+        REQUIRE(result[1][1] == 31);
     }
 
     SECTION("Matrix splicing") {
@@ -58,15 +58,15 @@ TEST_CASE("Matrix operations", "[vector]") {
         auto evenCols = std::views::iota(0, 5) | std::views::filter([](const int i) { return i % 2 == 0; });
         Matrix<3, 3, int> subMatrix1 = original.splice<3, 3>(evenRows, evenCols);
 
-        REQUIRE(subMatrix1.data[0][0] == 1);
-        REQUIRE(subMatrix1.data[0][1] == 0);
-        REQUIRE(subMatrix1.data[0][2] == 0);
-        REQUIRE(subMatrix1.data[1][0] == 0);
-        REQUIRE(subMatrix1.data[1][1] == 1);
-        REQUIRE(subMatrix1.data[1][2] == 0);
-        REQUIRE(subMatrix1.data[2][0] == 0);
-        REQUIRE(subMatrix1.data[2][1] == 0);
-        REQUIRE(subMatrix1.data[2][2] == 1);
+        REQUIRE(subMatrix1[0][0] == 1);
+        REQUIRE(subMatrix1[0][1] == 0);
+        REQUIRE(subMatrix1[0][2] == 0);
+        REQUIRE(subMatrix1[1][0] == 0);
+        REQUIRE(subMatrix1[1][1] == 1);
+        REQUIRE(subMatrix1[1][2] == 0);
+        REQUIRE(subMatrix1[2][0] == 0);
+        REQUIRE(subMatrix1[2][1] == 0);
+        REQUIRE(subMatrix1[2][2] == 1);
     }
 
     SECTION("Matrix transpose") {
@@ -75,10 +75,10 @@ TEST_CASE("Matrix operations", "[vector]") {
 
         const Matrix<2, 2, int> result = m.transpose();
 
-        REQUIRE(result.data[0][0] == 1);
-        REQUIRE(result.data[0][1] == 1);
-        REQUIRE(result.data[1][0] == 2);
-        REQUIRE(result.data[1][1] == 2);
+        REQUIRE(result[0][0] == 1);
+        REQUIRE(result[0][1] == 1);
+        REQUIRE(result[1][0] == 2);
+        REQUIRE(result[1][1] == 2);
     }
 
     SECTION("Matrix determinant") {
@@ -99,21 +99,21 @@ TEST_CASE("Matrix operations", "[vector]") {
 
         const Matrix<4, 4, float> result = m * 2;
 
-        REQUIRE(result.data[0][0] == 2);
-        REQUIRE(result.data[0][1] == 4);
-        REQUIRE(result.data[0][2] == 6);
-        REQUIRE(result.data[0][3] == 8);
-        REQUIRE(result.data[1][0] == 10);
-        REQUIRE(result.data[1][1] == 12);
-        REQUIRE(result.data[1][2] == 14);
-        REQUIRE(result.data[1][3] == 16);
-        REQUIRE(result.data[2][0] == 18);
-        REQUIRE(result.data[2][1] == 20);
-        REQUIRE(result.data[2][2] == 22);
-        REQUIRE(result.data[2][3] == 24);
-        REQUIRE(result.data[3][0] == 26);
-        REQUIRE(result.data[3][1] == 28);
-        REQUIRE(result.data[3][2] == 30);
-        REQUIRE(result.data[3][3] == 32);
+        REQUIRE(result[0][0] == 2);
+        REQUIRE(result[0][1] == 4);
+        REQUIRE(result[0][2] == 6);
+        REQUIRE(result[0][3] == 8);
+        REQUIRE(result[1][0] == 10);
+        REQUIRE(result[1][1] == 12);
+        REQUIRE(result[1][2] == 14);
+        REQUIRE(result[1][3] == 16);
+        REQUIRE(result[2][0] == 18);
+        REQUIRE(result[2][1] == 20);
+        REQUIRE(result[2][2] == 22);
+        REQUIRE(result[2][3] == 24);
+        REQUIRE(result[3][0] == 26);
+        REQUIRE(result[3][1] == 28);
+        REQUIRE(result[3][2] == 30);
+        REQUIRE(result[3][3] == 32);
     }
 }
