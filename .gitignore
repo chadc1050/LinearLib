@@ -1,5 +1,6 @@
 cmake-build-debug
 .idea
+out
 
 /CTestTestfile.cmake
 /Makefile
@@ -8,3 +9,6 @@ cmake-build-debug
 /CMakeFiles/
 /LinearLib_Tests
 /libLinearLib.a
+/CPackSourceConfig.cmake
+/CPackConfig.cmake
+/install_manifest.txt

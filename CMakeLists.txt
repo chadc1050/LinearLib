@@ -1,12 +1,16 @@
-cmake_minimum_required(VERSION 3.31)
+CMAKE_MINIMUM_REQUIRED(VERSION 3.31)
 
 SET(PROJECTNAME LinearLib)
 
-project(${PROJECTNAME})
+PROJECT(${PROJECTNAME}
+    VERSION 0.0.1
+    LANGUAGES CXX
+    DESCRIPTION "A Linear Algebra Library."
+)
 
 SET(ROOT_DIR .)
 
-include_directories(
+INCLUDE_DIRECTORIES(
     ${ROOT_DIR}/include
     ${ROOT_DIR}/third-party/include
     ${ROOT_DIR}/third-party/lib/catch2
@@ -23,30 +27,43 @@ FILE(GLOB_RECURSE THIRD_PARTY_SOURCES ${ROOT_DIR}/third-party/lib/*.cpp)
 
 FILE(GLOB_RECURSE THIRD_PARTY_HEADERS ${ROOT_DIR}/third-party/include/*.hpp)
 
-set(CMAKE_CXX_STANDARD 23)
+SET(CMAKE_CXX_STANDARD 23)
+SET(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-add_library(LinearLib STATIC ${PROJECT_SOURCES}
+ADD_LIBRARY(LinearLib STATIC ${PROJECT_SOURCES}
         ${PROJECT_HEADERS}
         ${THIRD_PARTY_SOURCES}
         ${THIRD_PARTY_HEADERS})
 
 # Enable testing
-enable_testing()
+ENABLE_TESTING()
 
 # Add Catch2 main source
-set(CATCH_SOURCE ${ROOT_DIR}/third-party/lib/catch2/catch_amalgamated.cpp)
-
+SET(CATCH_SOURCE ${ROOT_DIR}/third-party/lib/catch2/catch_amalgamated.cpp)
 FILE(GLOB_RECURSE TEST_SOURCES ${ROOT_DIR}/tests/*.cpp)
 
 # Add test executable
-add_executable(${PROJECTNAME}_Tests
+ADD_EXECUTABLE(${PROJECTNAME}_Tests
     ${TEST_SOURCES}
     ${CATCH_SOURCE}
 )
 
 # Link the test executable with the main library
-target_link_libraries(${PROJECTNAME}_Tests PRIVATE ${PROJECTNAME})
+TARGET_LINK_LIBRARIES(${PROJECTNAME}_Tests PRIVATE ${PROJECTNAME})
 
 # Add tests to CTest
-add_test(NAME ${PROJECTNAME}_Tests COMMAND ${PROJECTNAME}_Tests)
+ADD_TEST(NAME ${PROJECTNAME}_Tests COMMAND ${PROJECTNAME}_Tests)
 
+# Packaging
+SET(OUT_DIR out)
+SET(CPACK_PACKAGE_DIRECTORY ${OUT_DIR})
+
+SET(CPACK_PACKAGE_NAME ${PROJECT_NAME})
+set(CPACK_PACKAGE_DESCRIPTION "A Linear Algebra Library.")
+
+SET(CPACK_PACKAGE_LICENSE "APACHE")
+SET(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_CURRENT_SOURCE_DIR}/LICENSE-APACHE.txt)
+
+SET(CPACK_GENERATOR "TGZ;ZIP")
+
+INCLUDE(CPack)

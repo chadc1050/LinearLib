@@ -1,6 +1,8 @@
 #include "catch_amalgamated.hpp"
 #include "Vector.hpp"
 
+using namespace LinearLib;
+
 TEST_CASE("Vector operations", "[vector]") {
     SECTION("Vector addition") {
 
