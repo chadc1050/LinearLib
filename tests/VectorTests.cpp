@@ -1,5 +1,5 @@
 #include "catch_amalgamated.hpp"
-#include "Vector.hpp"
+#include "../include/LinearLib/Vector.hpp"
 
 using namespace LinearLib;
 
@@ -26,6 +26,25 @@ TEST_CASE("Vector operations", "[vector]") {
         REQUIRE(result[0] == 3);
         REQUIRE(result[1] == 3);
         REQUIRE(result[2] == 3);
+    }
+
+    SECTION("Vector scalar multiplication") {
+        Vector<3, bool> v1 {true, false, true};
+
+        Vector<3, bool> res = v1 * false;
+
+        REQUIRE(res[0] == false);
+        REQUIRE(res[1] == false);
+        REQUIRE(res[2] == false);
+
+        Vector<4, float> v2 {1.0f, 2.0f, 3.0f, 4.0f};
+
+        Vector<4, float> res2 = v2 * 2.0f;
+
+        REQUIRE(res2[0] == 2.0f);
+        REQUIRE(res2[1] == 4.0f);
+        REQUIRE(res2[2] == 6.0f);
+        REQUIRE(res2[3] == 8.0f);
     }
 
     SECTION("Dot product") {

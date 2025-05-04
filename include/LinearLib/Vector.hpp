@@ -64,11 +64,27 @@ namespace LinearLib {
             return res;
         }
 
+        /**
+         * Dot Product
+         */
         T operator*(const Vector& other) const {
             T res = 0;
 
             for (std::size_t i = 0; i < N; i++) {
                 res+= data[i] * other.data[i];
+            }
+
+            return res;
+        }
+
+        /**
+         * Scalar Multiplication
+         */
+        Vector operator*(const T& other) const {
+            Vector res;
+
+            for (std::size_t i = 0; i < N; i++) {
+                res[i] = data[i] * other;
             }
 
             return res;
