@@ -1,5 +1,5 @@
 #include "catch_amalgamated.hpp"
-#include "Matrix.hpp"
+#include "../include/LinearLib/Matrix.hpp"
 
 using namespace LinearLib;
 
