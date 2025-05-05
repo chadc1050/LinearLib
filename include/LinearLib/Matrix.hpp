@@ -26,16 +26,35 @@ namespace LinearLib {
         Matrix() = default;
 
         static Matrix identity() {
+            return eye(0);
+        }
+
+        static Matrix eye(int const offset) {
+
+            assert(offset < static_cast<int>(C) && "Offset absolute value must be less than matrix dimension");
+            assert(offset > -static_cast<int>(C) && "Offset absolute value must be less than matrix dimension");
 
             Matrix res;
 
             for (std::size_t i = 0; i < R; i++) {
                 for (std::size_t j = 0; j < C; j++) {
-                    if (i == j) {
+                    if (i + offset == j) {
                         res.data[i][j] = T{1};
                     } else {
                         res.data[i][j] = T{0};
                     }
+                }
+            }
+
+            return res;
+        }
+
+        static Matrix zeros() {
+            Matrix res;
+
+            for (std::size_t i = 0; i < R; i++) {
+                for (std::size_t j = 0; j < C; j++) {
+                    res.data[i][j] = T{0};
                 }
             }
 
@@ -99,7 +118,8 @@ namespace LinearLib {
         }
 
         T determinant() const {
-            assert(R == C && "Determinant is only defined for square matrices");
+
+            assert(isSquare() && "Determinant is only defined for square matrices");
 
             // Base case 1
             if (R == 1) {
@@ -135,6 +155,27 @@ namespace LinearLib {
             }
 
             return res;
+        }
+
+        [[nodiscard]] static bool isSquare() {
+            return R == C;
+        }
+
+        [[nodiscard]] bool isSymmetric() const {
+
+            if (!isSquare()) {
+                return false;
+            }
+
+            for (std::size_t i = 0; i < R; i++) {
+                for (std::size_t j = 0; j < C; j++) {
+                    if (data[i][j] != data[j][i]) {
+                        return false;
+                    }
+                }
+            }
+
+            return true;
         }
 
         std::array<std::array<T, C>, R> getData() const {
@@ -187,8 +228,48 @@ namespace LinearLib {
             return res;
         }
 
+        /**
+         * Matrix dot product
+         */
         template<std::size_t I>
         Matrix<R, I, T> operator*(const Matrix<C, I, T>& other) const {
+
+            Matrix<R, I, T> res;
+
+            for (std::size_t i = 0; i < R; i++) {
+                for (std::size_t j = 0; j < C; j++) {
+                    T sum = T{};
+                    for (std::size_t k = 0; k < C; k++) {
+                        sum += data[i][k] * other[k][j];
+                    }
+                    res[i][j] = sum;
+                }
+            }
+
+            return res;
+        }
+
+        /**
+         * Scalar Multiplication
+         */
+        Matrix operator*(const T& scalar) const {
+            Matrix res;
+
+            for (std::size_t i = 0; i < R; i++) {
+                for (std::size_t j = 0; j < C; j++) {
+                    res.data[i][j] = data[i][j] * scalar;
+                }
+            }
+
+            return res;
+        }
+
+        /**
+         * Matrix Multiplication
+         */
+        template<std::size_t I>
+        Matrix<R, I, T> operator&(const Matrix<C, I, T>& other) const {
+
             Matrix<R, I, T> res;
 
             for (std::size_t i = 0; i < R; i++) {
@@ -198,18 +279,6 @@ namespace LinearLib {
                         sum += data[i][k] * other.data[k][j];
                     }
                     res.data[i][j] = sum;
-                }
-            }
-
-            return res;
-        }
-
-        Matrix operator*(const T& scalar) const {
-            Matrix res;
-
-            for (std::size_t i = 0; i < R; i++) {
-                for (std::size_t j = 0; j < C; j++) {
-                    res.data[i][j] = data[i][j] * scalar;
                 }
             }
 

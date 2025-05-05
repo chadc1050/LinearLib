@@ -35,6 +35,33 @@ TEST_CASE("Matrix operations", "[vector]") {
         REQUIRE(result[1][1] == 6);
     }
 
+    SECTION("Matrix dot product") {
+        const Matrix<2, 2, int> m1 {{1, 2},{3,4}};
+        const Matrix<2, 2, int> m2 {{5, 6},{7,8}};
+
+        const Matrix<2, 2, int> result1 = m1 * m2;
+
+        REQUIRE(result1[0][0] == 19);
+        REQUIRE(result1[0][1] == 22);
+        REQUIRE(result1[1][0] == 43);
+        REQUIRE(result1[1][1] == 50);
+
+        const Matrix<3, 3, int> m3 {{1, 1, 3},
+                                        {-1, 4, 1},
+                                        {0, 2, -2}};
+        const Matrix<3, 1, int> m4 {{1},
+                                        {0},
+                                        {-1}};
+
+        const Matrix<3, 1, int> result2 = m3 * m4;
+
+        REQUIRE(result2[0][0] == -2);
+        REQUIRE(result2[1][0] == -2);
+        REQUIRE(result2[2][0] == 2);
+
+
+    }
+
     SECTION("Matrix multiplication") {
         const Matrix<2, 4, int> m1 {{5, 3, 3, 4},
                                         {2, 4, 4, 3}};
@@ -44,7 +71,7 @@ TEST_CASE("Matrix operations", "[vector]") {
                                         {3, 2},
                                         {7, 1}};
 
-        const Matrix<2, 2, int> result = m1 * m2;
+        const Matrix<2, 2, int> result = m1 & m2;
 
         REQUIRE(result[0][0] == 67);
         REQUIRE(result[0][1] == 46);
@@ -117,5 +144,57 @@ TEST_CASE("Matrix operations", "[vector]") {
         REQUIRE(result[3][1] == 28);
         REQUIRE(result[3][2] == 30);
         REQUIRE(result[3][3] == 32);
+    }
+
+    SECTION("Zeros") {
+        const Matrix<4, 4, float> zeros = Matrix<4, 4, float>::zeros();
+
+        REQUIRE(zeros[0][0] == 0);
+        REQUIRE(zeros[0][1] == 0);
+        REQUIRE(zeros[0][2] == 0);
+        REQUIRE(zeros[0][3] == 0);
+        REQUIRE(zeros[1][0] == 0);
+        REQUIRE(zeros[1][1] == 0);
+        REQUIRE(zeros[1][2] == 0);
+    }
+
+    SECTION("Eye") {
+        const Matrix<4, 4, int> eye1 = Matrix<4, 4, int>::eye(1);
+
+        REQUIRE(eye1[0][0] == 0);
+        REQUIRE(eye1[0][1] == 1);
+        REQUIRE(eye1[0][2] == 0);
+        REQUIRE(eye1[0][3] == 0);
+        REQUIRE(eye1[1][0] == 0);
+        REQUIRE(eye1[1][1] == 0);
+        REQUIRE(eye1[1][2] == 1);
+        REQUIRE(eye1[1][3] == 0);
+        REQUIRE(eye1[2][0] == 0);
+        REQUIRE(eye1[2][1] == 0);
+        REQUIRE(eye1[2][2] == 0);
+        REQUIRE(eye1[2][3] == 1);
+        REQUIRE(eye1[3][0] == 0);
+        REQUIRE(eye1[3][1] == 0);
+        REQUIRE(eye1[3][2] == 0);
+        REQUIRE(eye1[3][3] == 0);
+
+        const Matrix<4, 4, int> eye2 = Matrix<4, 4, int>::eye(-2);
+
+        REQUIRE(eye2[0][0] == 0);
+        REQUIRE(eye2[0][1] == 0);
+        REQUIRE(eye2[0][2] == 0);
+        REQUIRE(eye2[0][3] == 0);
+        REQUIRE(eye2[1][0] == 0);
+        REQUIRE(eye2[1][1] == 0);
+        REQUIRE(eye2[1][2] == 0);
+        REQUIRE(eye2[1][3] == 0);
+        REQUIRE(eye2[2][0] == 1);
+        REQUIRE(eye2[2][1] == 0);
+        REQUIRE(eye2[2][2] == 0);
+        REQUIRE(eye2[2][3] == 0);
+        REQUIRE(eye2[3][0] == 0);
+        REQUIRE(eye2[3][1] == 1);
+        REQUIRE(eye2[3][2] == 0);
+        REQUIRE(eye2[3][3] == 0);
     }
 }
