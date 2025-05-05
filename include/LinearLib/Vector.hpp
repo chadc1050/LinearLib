@@ -5,6 +5,8 @@
 #include <initializer_list>
 #include <type_traits>
 
+#include "Matrix.hpp"
+
 namespace LinearLib {
     template<std::size_t N, typename T>
     requires std::is_arithmetic_v<T>
@@ -19,6 +21,26 @@ namespace LinearLib {
 
         // Default constructor is still needed
         Vector() = default;
+
+        T magnitude() const {
+            T res = 0;
+
+            for (std::size_t i = 0; i < N; i++) {
+                res += std::pow(data[i], 2);
+            }
+
+            return std::sqrt(res);
+        }
+
+        Matrix<1, N, T> asMatrix() {
+            Matrix<1, N, T> res;
+
+            for (std::size_t i = 0; i < N; i++) {
+                res[0][i] = data[i];
+            }
+
+            return res;
+        }
 
         std::array<T, N> getData() const {
             return data;
