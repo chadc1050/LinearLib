@@ -3,6 +3,7 @@
 #include <array>
 #include <cassert>
 #include <format>
+#include <functional>
 #include <initializer_list>
 #include <random>
 #include <type_traits>
