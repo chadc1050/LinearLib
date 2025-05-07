@@ -4,6 +4,7 @@
 #include <cassert>
 #include <format>
 #include <initializer_list>
+#include <random>
 #include <type_traits>
 #include <ranges>
 
@@ -50,11 +51,43 @@ namespace LinearLib {
         }
 
         static Matrix zeros() {
+            return uniform(T{0});
+        }
+
+        static Matrix ones() {
+            return uniform(T{1});
+        }
+
+        static Matrix uniform(T const val) {
             Matrix res;
 
             for (std::size_t i = 0; i < R; i++) {
                 for (std::size_t j = 0; j < C; j++) {
-                    res.data[i][j] = T{0};
+                    res.data[i][j] = val;
+                }
+            }
+
+            return res;
+        }
+
+        static Matrix random(T const min, T const max, std::size_t const seed = 0) {
+            Matrix res;
+
+            std::mt19937_64 rng(seed);
+
+            if constexpr (std::is_integral_v<T>) {
+                std::uniform_int_distribution<T> dist(min, max);
+                for (std::size_t i = 0; i < R; i++) {
+                    for (std::size_t j = 0; j < C; j++) {
+                        res.data[i][j] = dist(rng);
+                    }
+                }
+            } else if constexpr (std::is_floating_point_v<T>) {
+                std::uniform_real_distribution<T> dist(min, max);
+                for (std::size_t i = 0; i < R; i++) {
+                    for (std::size_t j = 0; j < C; j++) {
+                        res.data[i][j] = dist(rng);
+                    }
                 }
             }
 
@@ -182,6 +215,31 @@ namespace LinearLib {
             return data;
         }
 
+
+        void forEach(const std::function<void()>& func) {
+            for (std::size_t i = 0; i < R; i++) {
+                for (std::size_t j = 0; j < C; j++) {
+                    func();
+                }
+            }
+        }
+
+        void forEach(const std::function<void(T&)>& func) {
+            for (std::size_t i = 0; i < R; i++) {
+                for (std::size_t j = 0; j < C; j++) {
+                    func(data[i][j]);
+                }
+            }
+        }
+
+        void forEach(const std::function<void(T&, std::size_t, std::size_t)> func) {
+            for (std::size_t i = 0; i < R; i++) {
+                for (std::size_t j = 0; j < C; j++) {
+                    func(data[i][j], i, j);
+                }
+            }
+        }
+
         bool operator==(const Matrix& other) const {
             for (std::size_t i = 0; i < R; i++) {
                 for (std::size_t j = 0; j < C; j++) {
@@ -237,7 +295,7 @@ namespace LinearLib {
             Matrix<R, I, T> res;
 
             for (std::size_t i = 0; i < R; i++) {
-                for (std::size_t j = 0; j < C; j++) {
+                for (std::size_t j = 0; j < I; j++) {
                     T sum = T{};
                     for (std::size_t k = 0; k < C; k++) {
                         sum += data[i][k] * other[k][j];
@@ -284,5 +342,6 @@ namespace LinearLib {
 
             return res;
         }
+
     };
 }

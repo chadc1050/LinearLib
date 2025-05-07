@@ -27,12 +27,12 @@ TEST_CASE("Matrix operations", "[vector]") {
         const Matrix<2, 2, int> m2 {{3, 6},
                                         {7, 2}};
 
-        const Matrix<2, 2, int> result = m1 + m2;
+        const Matrix<2, 2, int> result = m1 - m2;
 
-        REQUIRE(result[0][0] == 8);
-        REQUIRE(result[0][1] == 9);
-        REQUIRE(result[1][0] == 9);
-        REQUIRE(result[1][1] == 6);
+        REQUIRE(result[0][0] == 2);
+        REQUIRE(result[0][1] == -3);
+        REQUIRE(result[1][0] == -5);
+        REQUIRE(result[1][1] == 2);
     }
 
     SECTION("Matrix dot product") {
@@ -196,5 +196,45 @@ TEST_CASE("Matrix operations", "[vector]") {
         REQUIRE(eye2[3][1] == 1);
         REQUIRE(eye2[3][2] == 0);
         REQUIRE(eye2[3][3] == 0);
+    }
+
+    SECTION("Random") {
+        size_t seed = 42;
+        const Matrix<2, 2, int> m1 = Matrix<2, 2, int>::random(1, 10, seed);
+
+        REQUIRE(m1[0][0] == 8);
+        REQUIRE(m1[0][1] == 7);
+        REQUIRE(m1[1][0] == 8);
+        REQUIRE(m1[1][1] == 2);
+
+        const Matrix<2, 2, float> m2 = Matrix<2, 2, float>::random(0.0, 100.0, seed);
+        REQUIRE(m2[0][0] == 75.515548706f);
+        REQUIRE(m2[0][1] == 63.903141022f);
+        REQUIRE(m2[1][0] == 75.214515686f);
+        REQUIRE(m2[1][1] == 13.627268791f);
+    }
+
+    SECTION("ForEach") {
+        Matrix<2, 2, int> m {{1, 2}, {3, 4} };
+
+        m.forEach([](int& value) {
+            value *= 2;
+        });
+
+        REQUIRE(m[0][0] == 2);
+        REQUIRE(m[0][1] == 4);
+        REQUIRE(m[1][0] == 6);
+        REQUIRE(m[1][1] == 8);
+
+        Matrix<2, 2, float> m2 = Matrix<2, 2, float>::uniform(10);
+
+        m2.forEach([](float& value, std::size_t row, std::size_t col) {
+            value = row + col;
+        });
+
+        REQUIRE(m2[0][0] == 0.0f);
+        REQUIRE(m2[0][1] == 1.0f);
+        REQUIRE(m2[1][0] == 1.0f);
+        REQUIRE(m2[1][1] == 2.0f);
     }
 }
