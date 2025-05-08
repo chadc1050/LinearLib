@@ -124,12 +124,12 @@ namespace LinearLib {
             return res;
         }
 
-        Matrix transpose() const {
-            Matrix res;
+        Matrix<C, R, T> transpose() const {
+            Matrix<C, R, T> res;
 
-            for (std::size_t i = 0; i < R; i++) {
-                for (std::size_t j = 0; j < C; j++) {
-                    res.data[j][i] = data[i][j];
+            for (std::size_t i = 0; i < C; i++) {
+                for (std::size_t j = 0; j < R; j++) {
+                    res.data[i][j] = data[j][i];
                 }
             }
 
