@@ -288,20 +288,15 @@ namespace LinearLib {
         }
 
         /**
-         * Matrix dot product
+         * Element-wise multiplication
          */
-        template<std::size_t I>
-        Matrix<R, I, T> operator*(const Matrix<C, I, T>& other) const {
+        Matrix operator*(const Matrix& other) const {
 
-            Matrix<R, I, T> res;
+            Matrix res;
 
             for (std::size_t i = 0; i < R; i++) {
-                for (std::size_t j = 0; j < I; j++) {
-                    T sum = T{};
-                    for (std::size_t k = 0; k < C; k++) {
-                        sum += data[i][k] * other[k][j];
-                    }
-                    res[i][j] = sum;
+                for (std::size_t j = 0; j < C; j++) {
+                    res.data[i][j] = data[i][j] * other[i][j];
                 }
             }
 
