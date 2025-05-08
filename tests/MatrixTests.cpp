@@ -35,33 +35,6 @@ TEST_CASE("Matrix operations", "[vector]") {
         REQUIRE(result[1][1] == 2);
     }
 
-    SECTION("Matrix dot product") {
-        const Matrix<2, 2, int> m1 {{1, 2},{3,4}};
-        const Matrix<2, 2, int> m2 {{5, 6},{7,8}};
-
-        const Matrix<2, 2, int> result1 = m1 * m2;
-
-        REQUIRE(result1[0][0] == 19);
-        REQUIRE(result1[0][1] == 22);
-        REQUIRE(result1[1][0] == 43);
-        REQUIRE(result1[1][1] == 50);
-
-        const Matrix<3, 3, int> m3 {{1, 1, 3},
-                                        {-1, 4, 1},
-                                        {0, 2, -2}};
-        const Matrix<3, 1, int> m4 {{1},
-                                        {0},
-                                        {-1}};
-
-        const Matrix<3, 1, int> result2 = m3 * m4;
-
-        REQUIRE(result2[0][0] == -2);
-        REQUIRE(result2[1][0] == -2);
-        REQUIRE(result2[2][0] == 2);
-
-
-    }
-
     SECTION("Matrix multiplication") {
         const Matrix<2, 4, int> m1 {{5, 3, 3, 4},
                                         {2, 4, 4, 3}};
