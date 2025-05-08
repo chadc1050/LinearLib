@@ -99,15 +99,18 @@ TEST_CASE("Matrix operations", "[vector]") {
     }
 
     SECTION("Matrix transpose") {
-        const Matrix<2, 2, int> m {{1, 2},
-                                        {1, 2}};
+        const Matrix<3, 2, int> m {{1, 2},
+                                        {4, 2},
+                                        {5, 6}};
 
-        const Matrix<2, 2, int> result = m.transpose();
+        const Matrix<2, 3, int> result = m.transpose();
 
         REQUIRE(result[0][0] == 1);
-        REQUIRE(result[0][1] == 1);
+        REQUIRE(result[0][1] == 4);
+        REQUIRE(result[0][2] == 5);
         REQUIRE(result[1][0] == 2);
         REQUIRE(result[1][1] == 2);
+        REQUIRE(result[1][2] == 6);
     }
 
     SECTION("Matrix determinant") {
