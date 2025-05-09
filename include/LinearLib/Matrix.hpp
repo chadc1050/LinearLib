@@ -314,6 +314,38 @@ namespace LinearLib {
             return *this = *this * other;
         }
 
+        Matrix operator/(const Matrix& other) const {
+            Matrix res;
+
+            for (std::size_t i = 0; i < R; i++) {
+                for (std::size_t j = 0; j < C; j++) {
+                    res.data[i][j] = data[i][j] / other[i][j];
+                }
+            }
+
+            return res;
+        }
+
+        Matrix operator/=(const Matrix& other) const {
+            return *this = *this / other;
+        }
+
+        Matrix operator%(const Matrix& other) const {
+            Matrix res;
+
+            for (std::size_t i = 0; i < R; i++) {
+                for (std::size_t j = 0; j < C; j++) {
+                    res.data[i][j] = data[i][j] % other[i][j];
+                }
+            }
+
+            return res;
+        }
+
+        Matrix operator%=(const Matrix& other) const {
+            return *this = *this % other;
+        }
+
         /**
          * Scalar Multiplication
          */
