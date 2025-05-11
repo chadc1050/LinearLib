@@ -6,6 +6,7 @@
 #include <functional>
 #include <initializer_list>
 #include <random>
+#include <experimental/simd>
 #include <type_traits>
 #include <ranges>
 
@@ -14,6 +15,37 @@ namespace LinearLib {
     requires std::is_arithmetic_v<T> && (R > 0) && (C > 0)
     struct Matrix {
         std::array<std::array<T, C>, R> data;
+
+        constexpr static std::size_t get_optimal_simd_size() {
+            if constexpr (C >= 32 && std::is_same_v<T, float>) return 32;
+            if constexpr (C >= 16 && std::is_same_v<T, float>) return 16;
+            if constexpr (C >= 8 && std::is_same_v<T, float>) return 8;
+            if constexpr (C >= 4) return 4;
+            if constexpr (C >= 2) return 2;
+            return 1;
+        }
+
+        constexpr static std::size_t optimal_simd_size = get_optimal_simd_size();
+
+        using simdType = std::experimental::fixed_size_simd<T, optimal_simd_size>;
+
+#ifdef DISABLE_SIMD
+        constexpr static bool isSimdSupported = false;
+#else
+        constexpr static bool isSimdSupported = std::is_same_v<T, float>
+            || std::is_same_v<T, double>
+            || std::is_same_v<T, int8_t>
+            || std::is_same_v<T, int16_t>
+            || std::is_same_v<T, int32_t>
+            || std::is_same_v<T, int64_t>
+            || std::is_same_v<T, uint8_t>
+            || std::is_same_v<T, uint16_t>
+            || std::is_same_v<T, uint32_t>
+            || std::is_same_v<T, uint64_t>;
+#endif
+
+
+        constexpr static auto simd_size = isSimdSupported ? simdType::size() : 1;
 
         Matrix(std::initializer_list<std::initializer_list<T>> init) {
             assert(init.size() == R && "Initializer list size must match vector dimension");
@@ -71,10 +103,16 @@ namespace LinearLib {
             return res;
         }
 
-        static Matrix random(T const min, T const max, std::size_t const seed = 0) {
-            Matrix res;
+        static Matrix random(T const min, T const max, std::size_t const seed) {
+            return random(min, max, std::mt19937_64(seed));
+        }
 
-            std::mt19937_64 rng(seed);
+        static Matrix random(T const min, T const max) {
+            return random(min, max, std::random_device{}());
+        }
+
+        static Matrix random(T const min, T const max, std::mt19937_64 rng) {
+            Matrix res;
 
             if constexpr (std::is_integral_v<T>) {
                 std::uniform_int_distribution<T> dist(min, max);
@@ -265,33 +303,71 @@ namespace LinearLib {
         Matrix operator+(const Matrix& other) const {
             Matrix res;
 
-            for (std::size_t i = 0; i < R; i++) {
-                for (std::size_t j = 0; j < C; j++) {
-                    res.data[i][j] = data[i][j] + other[i][j];
+            if (isSimdSupported) {
+                for (std::size_t i = 0; i < R; i++) {
+                    std::size_t j = 0;
+
+                    for (; j + simd_size < C; j += simd_size) {
+                        simdType a(&data[i][j], std::experimental::element_aligned);
+                        simdType b(&other[i][j], std::experimental::element_aligned);
+
+                        simdType result = a + b;
+                        result.copy_to(&res.data[i][j], std::experimental::element_aligned);
+                    }
+
+                    for (; j < C; j++) {
+                        res.data[i][j] = data[i][j] + other[i][j];
+                    }
+                }
+            } else {
+                for (std::size_t i = 0; i < R; i++) {
+                    for (std::size_t j = 0; j < C; j++) {
+                        res.data[i][j] = data[i][j] + other[i][j];
+                    }
                 }
             }
 
             return res;
         }
 
-        Matrix operator+=(const Matrix& other) const {
-            return *this = *this + other;
+        Matrix operator+=(const Matrix& other) {
+            *this = *this + other;
+            return *this;
         }
 
         Matrix operator-(const Matrix& other) const {
             Matrix res;
 
-            for (std::size_t i = 0; i < R; i++) {
-                for (std::size_t j = 0; j < C; j++) {
-                    res.data[i][j] = data[i][j] - other[i][j];
+            if (isSimdSupported) {
+                for (std::size_t i = 0; i < R; i++) {
+                    std::size_t j = 0;
+
+                    for (; j + simd_size < C; j += simd_size) {
+                        simdType a(&data[i][j], std::experimental::element_aligned);
+                        simdType b(&other[i][j], std::experimental::element_aligned);
+
+                        simdType result = a - b;
+                        result.copy_to(&res.data[i][j], std::experimental::element_aligned);
+                    }
+
+                    for (; j < C; j++) {
+                        res.data[i][j] = data[i][j] - other[i][j];
+                    }
+                }
+            } else {
+                for (std::size_t i = 0; i < R; i++) {
+                    for (std::size_t j = 0; j < C; j++) {
+                        res.data[i][j] = data[i][j] - other[i][j];
+                    }
                 }
             }
 
             return res;
         }
 
-        Matrix operator-=(const Matrix& other) const {
-            return *this = *this - other;
+        Matrix operator-=(const Matrix& other) {
+            *this = *this - other;
+            return *this;
         }
 
         /**
@@ -301,49 +377,106 @@ namespace LinearLib {
 
             Matrix res;
 
-            for (std::size_t i = 0; i < R; i++) {
-                for (std::size_t j = 0; j < C; j++) {
-                    res.data[i][j] = data[i][j] * other[i][j];
+            if (isSimdSupported) {
+                for (std::size_t i = 0; i < R; i++) {
+                    std::size_t j = 0;
+
+                    for (; j + simd_size < C; j += simd_size) {
+                        simdType a(&data[i][j], std::experimental::element_aligned);
+                        simdType b(&other[i][j], std::experimental::element_aligned);
+
+                        simdType result = a * b;
+                        result.copy_to(&res.data[i][j], std::experimental::element_aligned);
+                    }
+
+                    for (; j < C; j++) {
+                        res.data[i][j] = data[i][j] * other[i][j];
+                    }
+                }
+            } else {
+                for (std::size_t i = 0; i < R; i++) {
+                    for (std::size_t j = 0; j < C; j++) {
+                        res.data[i][j] = data[i][j] * other[i][j];
+                    }
                 }
             }
 
             return res;
         }
 
-        Matrix operator*=(const Matrix& other) const {
-            return *this = *this * other;
+        Matrix operator*=(const Matrix& other) {
+            *this = *this * other;
+            return *this;
         }
 
         Matrix operator/(const Matrix& other) const {
             Matrix res;
 
-            for (std::size_t i = 0; i < R; i++) {
-                for (std::size_t j = 0; j < C; j++) {
-                    res.data[i][j] = data[i][j] / other[i][j];
+            if (isSimdSupported) {
+                for (std::size_t i = 0; i < R; i++) {
+                    std::size_t j = 0;
+
+                    for (; j + simd_size < C; j += simd_size) {
+                        simdType a(&data[i][j], std::experimental::element_aligned);
+                        simdType b(&other[i][j], std::experimental::element_aligned);
+
+                        simdType result = a / b;
+                        result.copy_to(&res.data[i][j], std::experimental::element_aligned);
+                    }
+
+                    for (; j < C; j++) {
+                        res.data[i][j] = data[i][j] / other[i][j];
+                    }
+                }
+            } else {
+                for (std::size_t i = 0; i < R; i++) {
+                    for (std::size_t j = 0; j < C; j++) {
+                        res.data[i][j] = data[i][j] / other[i][j];
+                    }
                 }
             }
 
             return res;
         }
 
-        Matrix operator/=(const Matrix& other) const {
-            return *this = *this / other;
+        Matrix operator/=(const Matrix& other) {
+            *this = *this / other;
+            return *this;
         }
 
         Matrix operator%(const Matrix& other) const {
             Matrix res;
 
-            for (std::size_t i = 0; i < R; i++) {
-                for (std::size_t j = 0; j < C; j++) {
-                    res.data[i][j] = data[i][j] % other[i][j];
+            if (isSimdSupported) {
+                for (std::size_t i = 0; i < R; i++) {
+                    std::size_t j = 0;
+
+                    for (; j + simd_size < C; j += simd_size) {
+                        simdType a(&data[i][j], std::experimental::element_aligned);
+                        simdType b(&other[i][j], std::experimental::element_aligned);
+
+                        simdType result = a % b;
+                        result.copy_to(&res.data[i][j], std::experimental::element_aligned);
+                    }
+
+                    for (; j < C; j++) {
+                        res.data[i][j] = data[i][j] % other[i][j];
+                    }
+                }
+            } else {
+                for (std::size_t i = 0; i < R; i++) {
+                    for (std::size_t j = 0; j < C; j++) {
+                        res.data[i][j] = data[i][j] % other[i][j];
+                    }
                 }
             }
 
             return res;
         }
 
-        Matrix operator%=(const Matrix& other) const {
-            return *this = *this % other;
+        Matrix operator%=(const Matrix& other) {
+            *this = *this % other;
+            return *this;
         }
 
         /**
@@ -352,17 +485,36 @@ namespace LinearLib {
         Matrix operator*(const T& scalar) const {
             Matrix res;
 
-            for (std::size_t i = 0; i < R; i++) {
-                for (std::size_t j = 0; j < C; j++) {
-                    res.data[i][j] = data[i][j] * scalar;
+            if (isSimdSupported) {
+                for (std::size_t i = 0; i < R; i++) {
+                    std::size_t j = 0;
+
+                    for (; j + simd_size < C; j += simd_size) {
+                        simdType a(&data[i][j], std::experimental::element_aligned);
+                        simdType b(&scalar, std::experimental::element_aligned);
+
+                        simdType result = a * b;
+                        result.copy_to(&res.data[i][j], std::experimental::element_aligned);
+                    }
+
+                    for (; j < C; j++) {
+                        res.data[i][j] = data[i][j] * scalar;
+                    }
+                }
+            } else {
+                for (std::size_t i = 0; i < R; i++) {
+                    for (std::size_t j = 0; j < C; j++) {
+                        res.data[i][j] = data[i][j] * scalar;
+                    }
                 }
             }
 
             return res;
         }
 
-        Matrix operator*=(const T& scalar) const {
-            return *this = *this * scalar;
+        Matrix operator*=(const T& scalar) {
+            *this = *this * scalar;
+            return *this;
         }
 
         /**
@@ -385,6 +537,5 @@ namespace LinearLib {
 
             return res;
         }
-
     };
 }

@@ -3,7 +3,7 @@
 
 using namespace LinearLib;
 
-TEST_CASE("Matrix operations", "[vector]") {
+TEST_CASE("Matrix operations", "[matrix]") {
 
     SECTION("Matrix addition") {
         const Matrix<2, 2, int> m1 {{1, 2},
@@ -18,6 +18,43 @@ TEST_CASE("Matrix operations", "[vector]") {
         REQUIRE(result[0][1] == 3);
         REQUIRE(result[1][0] == 3);
         REQUIRE(result[1][1] == 3);
+
+        Matrix<10, 10, float> m3 = Matrix<10, 10, float>::uniform(3);
+        Matrix<10, 10, float> m4 = Matrix<10, 10, float>::uniform(5);
+
+        m3 += m4;
+
+        for (std::size_t i = 0; i < 10; i++) {
+            for (std::size_t j = 0; j < 10; j++) {
+                REQUIRE(m3[i][j] == 8);
+            }
+        }
+
+        Matrix<23, 23, float> m5 = Matrix<23, 23, float>::uniform(-2);
+        Matrix<23, 23, float> m6 = Matrix<23, 23, float>::uniform(20);
+
+        m5 += m6;
+
+        for (std::size_t i = 0; i < 23; i++) {
+            for (std::size_t j = 0; j < 23; j++) {
+                REQUIRE(m5[i][j] == 18);
+            }
+        }
+
+        Matrix<16, 16, float> m7 = Matrix<16, 16, float>::identity() * 3;
+        Matrix<16, 16, float> m8 = Matrix<16, 16, float>::identity() * 5;
+
+        m7 += m8;
+
+        for (std::size_t i = 0; i < 16; i++) {
+            for (std::size_t j = 0; j < 16; j++) {
+                if (i == j) {
+                    REQUIRE(m7[i][j] == 8);
+                } else {
+                    REQUIRE(m7[i][j] == 0);
+                }
+            }
+        }
     }
 
     SECTION("Matrix subtraction") {
@@ -50,6 +87,48 @@ TEST_CASE("Matrix operations", "[vector]") {
         REQUIRE(result[0][1] == 46);
         REQUIRE(result[1][0] == 59);
         REQUIRE(result[1][1] == 31);
+
+        Matrix<64, 64, float> m1_large_simd = Matrix<64, 64, float>::uniform(10.0f);
+        Matrix<64, 64, float> m2_large_simd = Matrix<64, 64, float>::uniform(10.0f);
+
+        const Matrix<64, 64, float> result_simd = m1_large_simd & m2_large_simd;
+
+        for (std::size_t i = 0; i < 64; i++) {
+            for (std::size_t j = 0; j < 64; j++) {
+                REQUIRE(result_simd[i][j] == 6400);
+            }
+        }
+    }
+
+    SECTION("Matrix division") {
+
+        const Matrix<2, 2, int> m1 {{6, 24},
+                                        {14, 4}};
+
+        const Matrix<2, 2, int> m2 {{3, 6},
+                                        {7, 4}};
+
+        const Matrix<2, 2, int> result = m1 / m2;
+
+        REQUIRE(result[0][0] == 2);
+        REQUIRE(result[0][1] == 4);
+        REQUIRE(result[1][0] == 2);
+        REQUIRE(result[1][1] == 1);
+    }
+
+    SECTION("Matrix modulo") {
+        const Matrix<2, 2, int> m1 {{6, 25},
+                                        {13, 4}};
+
+        const Matrix<2, 2, int> m2 {{3, 6},
+                                        {7, 4}};
+
+        const Matrix<2, 2, int> result = m1 % m2;
+
+        REQUIRE(result[0][0] == 0);
+        REQUIRE(result[0][1] == 1);
+        REQUIRE(result[1][0] == 6);
+        REQUIRE(result[1][1] == 0);
     }
 
     SECTION("Matrix splicing") {
