@@ -13,16 +13,6 @@ TEST_CASE("Vector operations", "[vector]") {
         REQUIRE(result == 5);
     }
 
-    SECTION("As Matrix") {
-        Vector<3, int> v {1, 2, 3};
-
-        Matrix<1, 3, int> m = v.asMatrix();
-
-        REQUIRE(m[0][0] == 1);
-        REQUIRE(m[0][1] == 2);
-        REQUIRE(m[0][2] == 3);
-    }
-
     SECTION("Vector addition") {
 
         Vector<3, int> v1 {1, 2, 3};

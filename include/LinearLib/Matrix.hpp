@@ -8,11 +8,13 @@
 #include <type_traits>
 #include <ranges>
 
+#include "Vector.hpp"
+
 namespace LinearLib {
     template<std::size_t R, std::size_t C, typename T>
-    requires std::is_arithmetic_v<T> && (R > 0) && (C > 0)
+    requires std::is_arithmetic_v<T>
     struct Matrix {
-        std::array<std::array<T, C>, R> data;
+        std::array<Vector<C, T>, R> data;
 
         Matrix(std::initializer_list<std::initializer_list<T>> init) {
             assert(init.size() == R && "Initializer list size must match vector dimension");
@@ -149,7 +151,7 @@ namespace LinearLib {
 
             for (std::size_t i = 0; i < rows; i++) {
                 for (std::size_t j = 0; j < cols; j++) {
-                    res.data[i][j] = data[i * cols + j];
+                    res[i][j] = data[i * cols + j];
                 }
             }
 
@@ -217,10 +219,6 @@ namespace LinearLib {
             return true;
         }
 
-        std::array<std::array<T, C>, R> getData() const {
-            return data;
-        }
-
         void forEach(const std::function<void()>& func) {
             for (std::size_t i = 0; i < R; i++) {
                 for (std::size_t j = 0; j < C; j++) {
@@ -257,12 +255,12 @@ namespace LinearLib {
             return true;
         }
 
-        std::array<T, C>& operator[](std::size_t index) {
+        Vector<C, T>& operator[](std::size_t index) {
             assert(index < R && "Index out of bounds");
             return data[index];
         }
 
-        const std::array<T, C>& operator[](std::size_t index) const {
+        const Vector<C, T>& operator[](std::size_t index) const {
             assert(index < R && "Index out of bounds");
             return data[index];
         }
@@ -271,9 +269,7 @@ namespace LinearLib {
             Matrix res;
 
             for (std::size_t i = 0; i < R; i++) {
-                for (std::size_t j = 0; j < C; j++) {
-                    res[i][j] = lhs[i][j] + rhs[i][j];
-                }
+                res[i] = lhs[i] + rhs[i];
             }
 
             return res;
@@ -292,9 +288,7 @@ namespace LinearLib {
             Matrix res;
 
             for (std::size_t i = 0; i < R; i++) {
-                for (std::size_t j = 0; j < C; j++) {
-                    res[i][j] = minuend[i][j] - subtrahend[i][j];
-                }
+                res[i] = minuend[i] - subtrahend[i];
             }
 
             return res;
@@ -314,9 +308,7 @@ namespace LinearLib {
             Matrix res;
 
             for (std::size_t i = 0; i < R; i++) {
-                for (std::size_t j = 0; j < C; j++) {
-                    res[i][j] = multiplicand[i][j] * multiplier[i][j];
-                }
+                res[i] = multiplicand[i] * multiplier[i];
             }
 
             return res;
@@ -335,9 +327,7 @@ namespace LinearLib {
             Matrix res;
 
             for (std::size_t i = 0; i < R; i++) {
-                for (std::size_t j = 0; j < C; j++) {
-                    res[i][j] = dividend[i][j] / divisor[i][j];
-                }
+                res[i] = dividend[i] / divisor[i];
             }
 
             return res;
@@ -356,9 +346,7 @@ namespace LinearLib {
             Matrix res;
 
             for (std::size_t i = 0; i < R; i++) {
-                for (std::size_t j = 0; j < C; j++) {
-                    res[i][j] = mat[i][j] % mod[i][j];
-                }
+                res[i] = mat[i] % mod[i];
             }
 
             return res;
@@ -377,9 +365,7 @@ namespace LinearLib {
             Matrix res;
 
             for (std::size_t i = 0; i < R; i++) {
-                for (std::size_t j = 0; j < C; j++) {
-                    res[i][j] = mat[i][j] * scalar;
-                }
+                res[i] = mat[i] * scalar;
             }
 
             return res;

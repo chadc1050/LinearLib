@@ -5,8 +5,6 @@
 #include <initializer_list>
 #include <type_traits>
 
-#include "Matrix.hpp"
-
 namespace LinearLib {
     template<std::size_t N, typename T>
     requires std::is_arithmetic_v<T>
@@ -22,6 +20,23 @@ namespace LinearLib {
         // Default constructor is still needed
         Vector() = default;
 
+        // Iterator methods
+        typename std::array<T, N>::iterator begin() noexcept { return data.begin(); }
+        typename std::array<T, N>::const_iterator begin() const noexcept { return data.begin(); }
+        typename std::array<T, N>::const_iterator cbegin() const noexcept { return data.cbegin(); }
+
+        typename std::array<T, N>::iterator end() noexcept { return data.end(); }
+        typename std::array<T, N>::const_iterator end() const noexcept { return data.end(); }
+        typename std::array<T, N>::const_iterator cend() const noexcept { return data.cend(); }
+
+        typename std::array<T, N>::reverse_iterator rbegin() noexcept { return data.rbegin(); }
+        typename std::array<T, N>::const_reverse_iterator rbegin() const noexcept { return data.rbegin(); }
+        typename std::array<T, N>::const_reverse_iterator crbegin() const noexcept { return data.crbegin(); }
+
+        typename std::array<T, N>::reverse_iterator rend() noexcept { return data.rend(); }
+        typename std::array<T, N>::const_reverse_iterator rend() const noexcept { return data.rend(); }
+        typename std::array<T, N>::const_reverse_iterator crend() const noexcept { return data.crend(); }
+
         T magnitude() const {
             T res = 0;
 
@@ -34,16 +49,6 @@ namespace LinearLib {
 
         static Vector normalize(const Vector& vec) {
             return vec / vec.magnitude();
-        }
-
-        Matrix<1, N, T> asMatrix() {
-            Matrix<1, N, T> res;
-
-            for (std::size_t i = 0; i < N; i++) {
-                res[0][i] = data[i];
-            }
-
-            return res;
         }
 
         std::array<T, N> getData() const {
