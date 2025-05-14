@@ -88,14 +88,14 @@ TEST_CASE("Matrix operations", "[matrix]") {
         REQUIRE(result[1][0] == 59);
         REQUIRE(result[1][1] == 31);
 
-        Matrix<64, 64, float> m1_large_simd = Matrix<64, 64, float>::uniform(10.0f);
-        Matrix<64, 64, float> m2_large_simd = Matrix<64, 64, float>::uniform(10.0f);
+        Matrix<64, 64, float> m1_large = Matrix<64, 64, float>::uniform(10.0f);
+        Matrix<64, 64, float> m2_large = Matrix<64, 64, float>::uniform(10.0f);
 
-        const Matrix<64, 64, float> result_simd = m1_large_simd & m2_large_simd;
+        const Matrix<64, 64, float> result2 = m1_large & m2_large;
 
         for (std::size_t i = 0; i < 64; i++) {
             for (std::size_t j = 0; j < 64; j++) {
-                REQUIRE(result_simd[i][j] == 6400);
+                REQUIRE(result2[i][j] == 6400);
             }
         }
     }
