@@ -75,4 +75,15 @@ TEST_CASE("Vector operations", "[vector]") {
         REQUIRE(result[1] == -8);
         REQUIRE(result[2] == 12);
     }
+
+    SECTION("Iterator") {
+        Vector<3, int> v {1, 2, 3};
+
+        int counter = 0;
+        for (int i : v) {
+            counter++;
+        }
+
+        REQUIRE(counter == 3);
+    }
 }

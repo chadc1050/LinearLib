@@ -3,6 +3,7 @@
 #include <array>
 #include <cassert>
 #include <initializer_list>
+#include <random>
 #include <type_traits>
 
 namespace LinearLib {
@@ -36,6 +37,50 @@ namespace LinearLib {
         typename std::array<T, N>::reverse_iterator rend() noexcept { return data.rend(); }
         typename std::array<T, N>::const_reverse_iterator rend() const noexcept { return data.rend(); }
         typename std::array<T, N>::const_reverse_iterator crend() const noexcept { return data.crend(); }
+
+        static Vector uniform(const T& val) {
+            Vector res;
+
+            for (std::size_t i = 0; i < N; i++) {
+                res[i] = val;
+            }
+
+            return res;
+        }
+
+        static Vector zeros() {
+            return uniform(0);
+        }
+
+        static Vector ones() {
+            return uniform(1);
+        }
+
+        static Vector random(T const min, T const max, std::size_t const seed) {
+            return random(min, max, std::mt19937_64(seed));
+        }
+
+        static Vector random(T const min, T const max) {
+            return random(min, max, std::random_device{}());
+        }
+
+        static Vector random(T const min, T const max, std::mt19937_64 rng) {
+            Vector res;
+
+            if constexpr (std::is_integral_v<T>) {
+                std::uniform_int_distribution<T> dist(min, max);
+                for (std::size_t i = 0; i < N; i++) {
+                    res.data[i] = dist(rng);
+                }
+            } else if constexpr (std::is_floating_point_v<T>) {
+                std::uniform_real_distribution<T> dist(min, max);
+                for (std::size_t i = 0; i < N; i++) {
+                    res.data[i] = dist(rng);
+                }
+            }
+
+            return res;
+        }
 
         T magnitude() const {
             T res = 0;

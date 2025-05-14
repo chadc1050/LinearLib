@@ -7,6 +7,7 @@
 #include <random>
 #include <type_traits>
 #include <ranges>
+#include <iterator>
 
 #include "Vector.hpp"
 
@@ -27,6 +28,23 @@ namespace LinearLib {
 
         // Default constructor is still needed
         Matrix() = default;
+
+        // Iterator methods
+        typename std::array<Vector<C, T>, R>::iterator begin() noexcept { return data.begin(); }
+        typename std::array<Vector<C, T>, R>::const_iterator begin() const noexcept { return data.begin(); }
+        typename std::array<Vector<C, T>, R>::const_iterator cbegin() const noexcept { return data.cbegin(); }
+
+        typename std::array<Vector<C, T>, R>::iterator end() noexcept { return data.end(); }
+        typename std::array<Vector<C, T>, R>::const_iterator end() const noexcept { return data.end(); }
+        typename std::array<Vector<C, T>, R>::const_iterator cend() const noexcept { return data.cend(); }
+
+        typename std::array<Vector<C, T>, R>::reverse_iterator rbegin() noexcept { return data.rbegin(); }
+        typename std::array<Vector<C, T>, R>::const_reverse_iterator rbegin() const noexcept { return data.rbegin(); }
+        typename std::array<Vector<C, T>, R>::const_reverse_iterator crbegin() const noexcept { return data.crbegin(); }
+
+        typename std::array<Vector<C, T>, R>::reverse_iterator rend() noexcept { return data.rend(); }
+        typename std::array<Vector<C, T>, R>::const_reverse_iterator rend() const noexcept { return data.rend(); }
+        typename std::array<Vector<C, T>, R>::const_reverse_iterator crend() const noexcept { return data.crend(); }
 
         static Matrix identity() {
             return eye(0);

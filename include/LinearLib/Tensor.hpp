@@ -12,6 +12,23 @@ namespace LinearLib {
 
         Tensor() = default;
 
+        // Iterator methods
+        typename std::array<Matrix<R, C, T>, Z>::iterator begin() noexcept { return data.begin(); }
+        typename std::array<Matrix<R, C, T>, Z>::const_iterator begin() const noexcept { return data.begin(); }
+        typename std::array<Matrix<R, C, T>, Z>::const_iterator cbegin() const noexcept { return data.cbegin(); }
+
+        typename std::array<Matrix<R, C, T>, Z>::iterator end() noexcept { return data.end(); }
+        typename std::array<Matrix<R, C, T>, Z>::const_iterator end() const noexcept { return data.end(); }
+        typename std::array<Matrix<R, C, T>, Z>::const_iterator cend() const noexcept { return data.cend(); }
+
+        typename std::array<Matrix<R, C, T>, Z>::reverse_iterator rbegin() noexcept { return data.rbegin(); }
+        typename std::array<Matrix<R, C, T>, Z>::const_reverse_iterator rbegin() const noexcept { return data.rbegin(); }
+        typename std::array<Matrix<R, C, T>, Z>::const_reverse_iterator crbegin() const noexcept { return data.crbegin(); }
+
+        typename std::array<Matrix<R, C, T>, Z>::reverse_iterator rend() noexcept { return data.rend(); }
+        typename std::array<Matrix<R, C, T>, Z>::const_reverse_iterator rend() const noexcept { return data.rend(); }
+        typename std::array<Matrix<R, C, T>, Z>::const_reverse_iterator crend() const noexcept { return data.crend(); }
+
         static Tensor identity() {
             Tensor res;
 
@@ -38,6 +55,44 @@ namespace LinearLib {
             }
 
             return res;
+        }
+
+        static Tensor random(T const min, T const max, std::size_t const seed) {
+            return random(min, max, std::mt19937_64(seed));
+        }
+
+        static Tensor random(T const min, T const max) {
+            return random(min, max, std::random_device{}());
+        }
+
+        static Tensor random(T const min, T const max, std::mt19937_64 rng) {
+            Tensor res;
+
+            if constexpr (std::is_integral_v<T>) {
+                std::uniform_int_distribution<T> dist(min, max);
+                for (std::size_t i = 0; i < Z; i++) {
+                    for (std::size_t j = 0; j < R; j++) {
+                        for (std::size_t k = 0; k < C; k++) {
+                            res.data[i][j][k] = dist(rng);
+                        }
+                    }
+                }
+            } else if constexpr (std::is_floating_point_v<T>) {
+                std::uniform_real_distribution<T> dist(min, max);
+                for (std::size_t i = 0; i < Z; i++) {
+                    for (std::size_t j = 0; j < R; j++) {
+                        for (std::size_t k = 0; k < C; k++) {
+                            res.data[i][j][k] = dist(rng);
+                        }
+                    }
+                }
+            }
+
+            return res;
+        }
+
+        static bool isCube() {
+            return R == C && C == Z;
         }
 
         bool operator==(const Tensor& other) const {

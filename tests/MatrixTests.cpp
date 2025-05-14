@@ -292,4 +292,24 @@ TEST_CASE("Matrix operations", "[matrix]") {
         REQUIRE(m2[1][0] == 1.0f);
         REQUIRE(m2[1][1] == 2.0f);
     }
+
+    SECTION("Iterator") {
+        Matrix<2, 3, int> m {{1, 2, 5}, {3, 4, 4} };
+
+        int counter = 0;
+        for (Vector<3, int>& _ : m) {
+            counter++;
+        }
+
+        REQUIRE(counter == 2);
+
+        counter = 0;
+        for (Vector<3, int>& row : m) {
+            for (int& _ : row) {
+                counter++;
+            }
+        }
+
+        REQUIRE(counter == 6);
+    }
 }
