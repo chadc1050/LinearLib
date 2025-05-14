@@ -267,7 +267,7 @@ namespace LinearLib {
             return data[index];
         }
 
-        friend Matrix operator+(const Matrix& lhs, const Matrix& rhs) {
+        static Matrix add(const Matrix& lhs, const Matrix& rhs) {
             Matrix res;
 
             for (std::size_t i = 0; i < R; i++) {
@@ -279,21 +279,29 @@ namespace LinearLib {
             return res;
         }
 
+        friend Matrix operator+(const Matrix& lhs, const Matrix& rhs) {
+            return add(lhs, rhs);
+        }
+
         Matrix operator+=(const Matrix& other) {
             *this = *this + other;
             return *this;
         }
 
-        friend Matrix operator-(const Matrix& lhs, const Matrix& rhs) {
+        static Matrix subtract(const Matrix& minuend, const Matrix& subtrahend) {
             Matrix res;
 
             for (std::size_t i = 0; i < R; i++) {
                 for (std::size_t j = 0; j < C; j++) {
-                    res[i][j] = lhs[i][j] - rhs[i][j];
+                    res[i][j] = minuend[i][j] - subtrahend[i][j];
                 }
             }
 
             return res;
+        }
+
+        friend Matrix operator-(const Matrix& minuend, const Matrix& subtrahend) {
+            return subtract(minuend, subtrahend);
         }
 
         Matrix operator-=(const Matrix& other) {
@@ -301,19 +309,21 @@ namespace LinearLib {
             return *this;
         }
 
-        /**
-         * Element-wise multiplication
-         */
-        friend Matrix operator*(const Matrix& lhs, const Matrix& rhs) {
+
+        static Matrix multiply(const Matrix& multiplicand, const Matrix& multiplier) {
             Matrix res;
 
             for (std::size_t i = 0; i < R; i++) {
                 for (std::size_t j = 0; j < C; j++) {
-                    res[i][j] = lhs[i][j] * rhs[i][j];
+                    res[i][j] = multiplicand[i][j] * multiplier[i][j];
                 }
             }
 
             return res;
+        }
+
+        friend Matrix operator*(const Matrix& multiplicand, const Matrix& multiplier) {
+            return multiply(multiplicand, multiplier);
         }
 
         Matrix operator*=(const Matrix& other) {
@@ -321,16 +331,20 @@ namespace LinearLib {
             return *this;
         }
 
-        friend Matrix operator/(const Matrix& lhs, const Matrix& rhs) {
+        static Matrix divide(Matrix const& dividend, Matrix const& divisor) {
             Matrix res;
 
             for (std::size_t i = 0; i < R; i++) {
                 for (std::size_t j = 0; j < C; j++) {
-                    res[i][j] = lhs[i][j] / rhs[i][j];
+                    res[i][j] = dividend[i][j] / divisor[i][j];
                 }
             }
 
             return res;
+        }
+
+        friend Matrix operator/(const Matrix& dividend, const Matrix& divisor) {
+            return divide(dividend, divisor);
         }
 
         Matrix operator/=(const Matrix& other) {
@@ -338,16 +352,20 @@ namespace LinearLib {
             return *this;
         }
 
-        friend Matrix operator%(const Matrix& lhs, const Matrix& rhs) {
+        static Matrix modulus(const Matrix& mat, const Matrix& mod) {
             Matrix res;
 
             for (std::size_t i = 0; i < R; i++) {
                 for (std::size_t j = 0; j < C; j++) {
-                    res[i][j] = lhs[i][j] % rhs[i][j];
+                    res[i][j] = mat[i][j] % mod[i][j];
                 }
             }
 
             return res;
+        }
+
+        friend Matrix operator%(const Matrix& mat, const Matrix& mod) {
+            return modulus(mat, mod);
         }
 
         Matrix operator%=(const Matrix& other) {
@@ -355,10 +373,7 @@ namespace LinearLib {
             return *this;
         }
 
-        /**
-         * Scalar Multiplication
-         */
-        friend Matrix operator*(const Matrix& mat, const T& scalar) {
+        static Matrix multiply(const Matrix& mat, const T& scalar) {
             Matrix res;
 
             for (std::size_t i = 0; i < R; i++) {
@@ -368,6 +383,10 @@ namespace LinearLib {
             }
 
             return res;
+        }
+
+        friend Matrix operator*(const Matrix& mat, const T& scalar) {
+            return multiply(mat, scalar);
         }
 
         Matrix operator*=(const T& scalar) {

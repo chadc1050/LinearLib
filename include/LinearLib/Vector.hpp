@@ -32,6 +32,10 @@ namespace LinearLib {
             return std::sqrt(res);
         }
 
+        static Vector normalize(const Vector& vec) {
+            return vec / vec.magnitude();
+        }
+
         Matrix<1, N, T> asMatrix() {
             Matrix<1, N, T> res;
 
@@ -66,7 +70,7 @@ namespace LinearLib {
             return data[index];
         }
 
-        friend Vector operator+(const Vector& lhs, const Vector& rhs) {
+        static Vector add(const Vector& lhs, const Vector& rhs) {
             Vector res;
 
             for (std::size_t i = 0; i < N; i++) {
@@ -76,33 +80,93 @@ namespace LinearLib {
             return res;
         }
 
-        friend Vector operator-(const Vector& lhs, const Vector& rhs) {
+        friend Vector operator+(const Vector& lhs, const Vector& rhs) {
+            return add(lhs, rhs);
+        }
+
+        Vector operator+=(const Vector& other) {
+            *this = *this + other;
+            return *this;
+        }
+
+        static Vector subtract(const Vector& minuend, const Vector& subtrahend) {
             Vector res;
 
             for (std::size_t i = 0; i < N; i++) {
-                res[i] = lhs[i] - rhs[i];
+                res[i] = minuend[i] - subtrahend[i];
             }
 
             return res;
         }
 
-        /**
-         * Dot Product
-         */
-        friend T operator*(const Vector& lhs, const Vector& rhs) {
+        friend Vector operator-(const Vector& minuend, const Vector& subtrahend) {
+            return subtract(minuend, subtrahend);
+        }
+
+        Vector operator-=(const Vector& other) {
+            *this = *this + other;
+            return *this;
+        }
+
+
+        static T dot(const Vector& multiplicand, const Vector& multiplier) {
             T res = 0;
 
             for (std::size_t i = 0; i < N; i++) {
-                res += lhs[i] * rhs[i];
+                res += multiplicand[i] * multiplier[i];
             }
 
             return res;
         }
 
-        /**
-         * Scalar Multiplication
-         */
-        friend Vector operator*(const Vector& vec, const T& scalar) {
+        friend T operator*(const Vector& lhs, const Vector& rhs) {
+            return dot(lhs, rhs);
+        }
+
+        Vector operator*=(const Vector& other) {
+            *this = *this * other;
+            return *this;
+        }
+
+        static Vector divide(const Vector& dividend, const Vector& divisor) {
+            Vector res;
+
+            for (std::size_t i = 0; i < N; i++) {
+                res[i] = dividend[i] / divisor[i];
+            }
+
+            return res;
+        }
+
+        friend Vector operator/(const Vector& dividend, const Vector& divisor) {
+            return divide(dividend, divisor);
+        }
+
+        Vector operator/=(const Vector& other) {
+            *this = *this / other;
+            return *this;
+        }
+
+        static Vector modulus(const Vector& vec, const Vector& mod) {
+            Vector res;
+
+            for (std::size_t i = 0; i < N; i++) {
+                res[i] = vec[i] % mod[i];
+            }
+
+            return res;
+        }
+
+        friend Vector operator%(const Vector& vec, const Vector& mod) {
+            return modulus(vec, mod);
+        }
+
+        Vector operator%=(const Vector& other) {
+            *this = *this % other;
+            return *this;
+        }
+
+        static Vector multiply(const Vector& vec, const T& scalar) {
             Vector res;
 
             for (std::size_t i = 0; i < N; i++) {
@@ -112,15 +176,27 @@ namespace LinearLib {
             return res;
         }
 
-        Vector<3,T> operator&(const Vector<3,T>& other) const {
+        friend Vector operator*(const Vector& vec, const T& scalar) {
+            return multiply(vec, scalar);
+        }
 
+        Vector operator*=(const T& scalar) {
+            *this = *this * scalar;
+            return *this;
+        }
+
+        static Vector<3,T> cross(const Vector<3,T>& lhs, const Vector<3,T>& rhs) {
             Vector<3,T> res;
 
-            res[0] = data[1] * other[2] - data[2] * other[1];
-            res[1] = data[2] * other[0] - data[0] * other[2];
-            res[2] = data[0] * other[1] - data[1] * other[0];
+            res[0] = lhs[1] * rhs[2] - lhs[2] * rhs[1];
+            res[1] = lhs[2] * rhs[0] - lhs[0] * rhs[2];
+            res[2] = lhs[0] * rhs[1] - lhs[1] * rhs[0];
 
             return res;
+        }
+
+        Vector<3,T> operator&(const Vector<3,T>& other) const {
+            return cross(*this, other);
         }
     };
 }
