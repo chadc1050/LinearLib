@@ -66,21 +66,21 @@ namespace LinearLib {
             return data[index];
         }
 
-        Vector operator+(const Vector& other) const {
+        friend Vector operator+(const Vector& lhs, const Vector& rhs) {
             Vector res;
 
             for (std::size_t i = 0; i < N; i++) {
-                res.data[i] = data[i] + other.data[i];
+                res[i] = lhs[i] + rhs[i];
             }
 
             return res;
         }
 
-        Vector operator-(const Vector& other) const {
+        friend Vector operator-(const Vector& lhs, const Vector& rhs) {
             Vector res;
 
             for (std::size_t i = 0; i < N; i++) {
-                res.data[i] = data[i] - other.data[i];
+                res[i] = lhs[i] - rhs[i];
             }
 
             return res;
@@ -89,11 +89,11 @@ namespace LinearLib {
         /**
          * Dot Product
          */
-        T operator*(const Vector& other) const {
+        friend T operator*(const Vector& lhs, const Vector& rhs) {
             T res = 0;
 
             for (std::size_t i = 0; i < N; i++) {
-                res+= data[i] * other.data[i];
+                res += lhs[i] * rhs[i];
             }
 
             return res;
@@ -102,11 +102,11 @@ namespace LinearLib {
         /**
          * Scalar Multiplication
          */
-        Vector operator*(const T& other) const {
+        friend Vector operator*(const Vector& vec, const T& scalar) {
             Vector res;
 
             for (std::size_t i = 0; i < N; i++) {
-                res[i] = data[i] * other;
+                res[i] = vec[i] * scalar;
             }
 
             return res;
@@ -116,9 +116,9 @@ namespace LinearLib {
 
             Vector<3,T> res;
 
-            res.data[0] = data[1] * other.data[2] - data[2] * other.data[1];
-            res.data[1] = data[2] * other.data[0] - data[0] * other.data[2];
-            res.data[2] = data[0] * other.data[1] - data[1] * other.data[0];
+            res[0] = data[1] * other[2] - data[2] * other[1];
+            res[1] = data[2] * other[0] - data[0] * other[2];
+            res[2] = data[0] * other[1] - data[1] * other[0];
 
             return res;
         }
