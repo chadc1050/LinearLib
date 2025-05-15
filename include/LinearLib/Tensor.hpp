@@ -4,6 +4,7 @@
 
 #include "Matrix.hpp"
 
+// TODO: This needs to be the general template for Vector and Matrix and all other dims
 namespace LinearLib {
     template<std::size_t R, std::size_t C, std::size_t Z, typename T>
     requires std::is_arithmetic_v<T>
