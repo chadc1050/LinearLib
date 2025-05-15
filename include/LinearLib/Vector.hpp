@@ -169,8 +169,18 @@ namespace LinearLib {
             return res;
         }
 
-        friend T operator*(const Vector& lhs, const Vector& rhs) {
-            return dot(lhs, rhs);
+        static Vector multiply(const Vector& multiplicand, const Vector& multiplier) {
+            Vector res;
+
+            for (std::size_t i = 0; i < N; i++) {
+                res[i] = multiplicand[i] * multiplier[i];
+            }
+
+            return res;
+        }
+
+        friend Vector operator*(const Vector& lhs, const Vector& rhs) {
+            return multiply(lhs, rhs);
         }
 
         Vector operator*=(const Vector& other) {

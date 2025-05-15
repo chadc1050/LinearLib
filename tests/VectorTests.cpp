@@ -60,7 +60,7 @@ TEST_CASE("Vector operations", "[vector]") {
         Vector<3, int> v1 {1, 2, 3};
         Vector<3, int> v2 {4, 5, 6};
 
-        int result = v1 * v2;
+        int result = Vector<3, int>::dot(v1, v2);
 
         REQUIRE(result == 32);  // 1*4 + 2*5 + 3*6 = 32
     }
